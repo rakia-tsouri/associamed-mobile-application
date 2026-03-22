@@ -1,98 +1,104 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Application Mobile - Suivi des Salles (Associa-Med)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+An end-to-end room tracking and management solution built for Associa-Med. This project includes a Flutter mobile application, a NestJS backend REST API, and a web-based Admin Dashboard. 
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🏗 System Architecture
 
-## Description
+This project is divided into three main components:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. **Backend API (`/src`)**: A robust REST API built with **NestJS**. It handles authentication (JWT), database operations via TypeORM, and business logic for users, roles, and rooms tracking.
+2. **Mobile Application (`/frontend`)**: A cross-platform mobile app built with **Flutter**. It provides distinct interfaces and features based on the logged-in user's role (Admin, User 1, User 2).
+3. **Admin Dashboard (`/admin-dashboard`)**: A web interface for administrators to perform CRUD operations on users, monitor room metrics, and manage the system.
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## ✨ Features
 
-## Compile and run the project
+- **Role-Based Access Control**:
+  - **Admin**: Full control over users (CRUD) and rooms.
+  - **User 1 / User 2**: Specialized dashboard details, room assignment views, and optimized room cards.
+- **Room Tracking**: Monitor room availability and metrics.
+- **Associa-Med Branding**: Dynamic and modern UI tailored for the Associa-Med organization.
+- **Containerized Environment**: The backend, database, and admin dashboard are fully Dockerized for a seamless development and deployment experience.
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## 💻 Technologies Used
 
-# production mode
-$ npm run start:prod
-```
+### Backend
+- **Framework**: NestJS (TypeScript)
+- **Database**: MySQL 8.0
+- **ORM**: TypeORM
+- **Authentication**: Passport-JWT & bcrypt
 
-## Run tests
+### Mobile Frontend
+- **Framework**: Flutter (Dart)
+- **State Management**: Provider
+- **Storage**: `shared_preferences`
+- **Networking**: `http` package
 
-```bash
-# unit tests
-$ npm run test
+### Admin Dashboard / Infrastructure
+- **Server**: Nginx (Alpine)
+- **Containerization**: Docker & Docker Compose
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
-```
+## 🚀 Getting Started
 
-## Deployment
+### Prerequisites
+- [Docker & Docker Compose](https://www.docker.com/) (For backend & dashboard)
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) (For mobile app)
+- [Node.js](https://nodejs.org/en/) (Optional: for running the backend locally without Docker)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 1. Docker Setup (Backend, Database, Admin Dashboard)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+The easiest way to run the backend and dashboard is via Docker. A `docker-compose.yml` file is included at the root of the project.
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Start all services in the background
+docker-compose up -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Services running via Docker:**
+- **MySQL Database**: Exposed on Host port `3307`
+- **NestJS Backend**: Exposed on Host port `3000` (Swagger docs available at `http://localhost:3000/api/docs`)
+- **Admin Dashboard**: Exposed on Host port `8081` (Accessible at `http://localhost:8081`)
 
-## Resources
+*Note: If you need to stop the containers, run `docker-compose down`.*
 
-Check out a few resources that may come in handy when working with NestJS:
+### 2. Running the Flutter Mobile App
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+1. Navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
+2. Fetch the required dependencies:
+   ```bash
+   flutter pub get
+   ```
+3. Run the application on your connected device or emulator:
+   ```bash
+   flutter run
+   ```
 
-## Support
+*(Ensure the mobile app's API base URL points to your local machine's IP address if running on a physical device, e.g., `http://192.168.x.x:3000`)*
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## 🛠 Local Development (Without Docker)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+If you prefer to run the NestJS backend manually:
 
-## License
+1. Ensure a MySQL instance is running and update the `.env` file credentials.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the backend:
+   ```bash
+   # Development watch mode
+   npm run start:dev
+   ```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 📄 License
+This project is proprietary and built for Associa-Med.

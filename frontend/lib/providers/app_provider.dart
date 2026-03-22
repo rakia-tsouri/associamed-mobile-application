@@ -9,10 +9,12 @@ class AppProvider with ChangeNotifier {
   
   User? _user;
   List<Room> _rooms = [];
+  List<User> _users = [];
   bool _isLoading = false;
 
   User? get user => _user;
   List<Room> get rooms => _rooms;
+  List<User> get users => _users;
   bool get isLoading => _isLoading;
 
   Future<bool> login(String username, String password) async {
@@ -25,16 +27,13 @@ class AppProvider with ChangeNotifier {
       if (loginData['user'] != null && loginData['user']['id'] != null) {
         final userId = loginData['user']['id'];
         _user = await _api.getProfile(userId);
-      } else {
-        debugPrint('Login response missing user data: $loginData');
-        _user = null;
       }
       
       if (_user != null) {
         await fetchRooms();
+        if (_user!.role == UserRole.admin) await fetchUsers();
       }
     } catch (e) {
-      debugPrint('Login details: User=$username, Error=$e');
       _user = null;
     }
     
@@ -48,6 +47,27 @@ class AppProvider with ChangeNotifier {
     _rooms = [];
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
+    notifyListeners();
+  }
+
+  Future<void> fetchUsers() async {
+    _users = await _api.getUsers();
+    notifyListeners();
+  }
+
+  Future<void> addUser(String username, String password, String role) async {
+    await _api.createUser(username, password, role);
+    await fetchUsers();
+  }
+
+  Future<void> updateUser(int id, {String? username, String? password, String? role}) async {
+    await _api.updateUser(id, username: username, password: password, role: role);
+    await fetchUsers(); // Refresh the list
+  }
+
+  Future<void> deleteUser(int id) async {
+    await _api.removeUser(id);
+    _users.removeWhere((u) => u.id == id);
     notifyListeners();
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 
@@ -37,8 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
             ],
           ),
         ),
@@ -53,16 +54,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.local_hospital, size: 64, color: Color(0xFF1976D2)),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Suivi des Salles',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1976D2),
+                    const SizedBox(height: 20),
+                    SvgPicture.network(
+                      'https://associamed.org/wp-content/uploads/2024/09/Couleurs.svg',
+                      height: 120,
+                      placeholderBuilder: (context) => const Icon(Icons.medication, size: 80, color: Colors.indigo),
+                    ),
+                    const SizedBox(height: 40),
+                    const Text(
+                      'Associa-Med',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF1A237E),
+                        letterSpacing: 1.2,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const Text(
+                      'Suivi des Salles',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.indigoAccent,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
                     TextField(
                       controller: _usernameController,
                       decoration: const InputDecoration(
@@ -105,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Test: admin/user1/user2',
+                      '',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],

@@ -136,4 +136,53 @@ class ApiService {
     if (response.statusCode == 200) return User.fromJson(jsonDecode(response.body));
     throw Exception('Failed to get profile');
   }
+
+  Future<List<User>> getUsers() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/users'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => User.fromJson(json)).toList();
+    }
+    throw Exception('Failed to fetch users');
+  }
+
+  Future<User> createUser(String username, String password, String role) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/users'),
+      headers: await _getHeaders(),
+      body: jsonEncode({
+        'username': username,
+        'password': password,
+        'role': role,
+      }),
+    );
+    if (response.statusCode == 201) return User.fromJson(jsonDecode(response.body));
+    throw Exception('Failed to create user: ${response.body}');
+  }
+
+  Future<User> updateUser(int id, {String? username, String? password, String? role}) async {
+    final body = <String, dynamic>{};
+    if (username != null && username.isNotEmpty) body['username'] = username;
+    if (password != null && password.isNotEmpty) body['password'] = password;
+    if (role != null) body['role'] = role;
+
+    final response = await http.patch(
+      Uri.parse('$baseUrl/users/$id'),
+      headers: await _getHeaders(),
+      body: jsonEncode(body),
+    );
+    if (response.statusCode == 200) return User.fromJson(jsonDecode(response.body));
+    throw Exception('Failed to update user: ${response.body}');
+  }
+
+  Future<void> removeUser(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/users/$id'),
+      headers: await _getHeaders(),
+    );
+    if (response.statusCode != 200) throw Exception('Failed to delete user');
+  }
 }

@@ -1,0 +1,47 @@
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: suivi_salles_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: suivi_salles
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: suivi_salles_backend
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=123456789
+      - DB_DATABASE=suivi_salles
+      - JWT_SECRET=super-secret-key-associa-med
+      - JWT_EXPIRATION=24h
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  admin-dashboard:
+    image: nginx:alpine
+    container_name: suivi_salles_dashboard
+    ports:
+      - "8081:80"
+    volumes:
+      - ./admin-dashboard:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db_data:

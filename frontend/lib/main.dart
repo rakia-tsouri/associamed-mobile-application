@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'providers/app_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/room_list_screen.dart';
@@ -31,11 +32,72 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.outfitTextTheme(),
       ),
-      home: Consumer<AppProvider>(
-        builder: (context, provider, _) {
-          return provider.user == null ? const LoginScreen() : const RoomListScreen();
-        },
-      ),
+      home: const _AppSplashHandler(),
+    );
+  }
+}
+
+class _AppSplashHandler extends StatefulWidget {
+  const _AppSplashHandler();
+
+  @override
+  State<_AppSplashHandler> createState() => _AppSplashHandlerState();
+}
+
+class _AppSplashHandlerState extends State<_AppSplashHandler> {
+  bool _showSplash = true;
+  bool _isAssetReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAssets();
+  }
+
+  Future<void> _initializeAssets() async {
+    // Wait for a few seconds to ensure the SVG has time to download in the background
+    // before the splash screen fades out.
+    await Future.delayed(const Duration(seconds: 4));
+
+    if (mounted) {
+      setState(() {
+        _isAssetReady = true;
+        _showSplash = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_showSplash || !_isAssetReady) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.network(
+                'https://associamed.org/wp-content/uploads/2024/09/Couleurs.svg',
+                height: 150,
+                placeholderBuilder: (BuildContext context) => const CircularProgressIndicator(),
+              ),
+              const SizedBox(height: 32),
+              const CircularProgressIndicator(color: Color(0xFF1A237E)),
+              const SizedBox(height: 16),
+              const Text(
+                'Associa-Med',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF1A237E)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Consumer<AppProvider>(
+      builder: (context, provider, _) {
+        return provider.user == null ? const LoginScreen() : const RoomListScreen();
+      },
     );
   }
 }

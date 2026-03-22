@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+dist
+frontend
+admin-dashboard
+.git
+.idea
+Dockerfile
+docker-compose.yml

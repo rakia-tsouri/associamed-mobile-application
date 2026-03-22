@@ -86,6 +86,28 @@ const ApiService = {
             headers: ApiService.getHeaders()
         });
         if (!res.ok) throw new Error('Failed to delete room');
+    },
+
+    getMe: async () => {
+        // This is a helper to get the profile of the currently logged in user
+        // We'll use the /users/profile/:id endpoint if we have the ID, 
+        // or a dedicated /auth/profile if available. 
+        // For now, let's assume we fetch all users and find the one matching 
+        // (or we can add a /auth/profile endpoint to the backend later)
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+
+        try {
+            // Decode JWT to get ID (simple base64 decode of middle part)
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const res = await fetch(`${ApiService.baseUrl}/users/profile/${payload.id || payload.sub}`, {
+                headers: ApiService.getHeaders()
+            });
+            if (!res.ok) return null;
+            return res.json();
+        } catch (e) {
+            return null;
+        }
     }
 };
 window.ApiService = ApiService;
