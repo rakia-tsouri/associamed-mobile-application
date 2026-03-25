@@ -100,5 +100,16 @@ If you prefer to run the NestJS backend manually:
    npm run start:dev
    ```
 
+   ☁️ Production Deployment (Railway)
+The backend and database are deployed on Railway. Below is the full deployment setup.
+Architecture on Railway
+Railway Project
+├── Service: associamed-gestion-salles   (NestJS Backend)
+└── Service: MySQL                        (Database)
+Backend Service
+
+Source: Connected to the main branch of this GitHub repository.
+Live URL: https://associamed-gestion-salles-production.up.railway.app
+
 ## 📄 License
 This project is proprietary and built for Associa-Med.
