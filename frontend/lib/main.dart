@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'providers/app_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/room_list_screen.dart';
@@ -76,10 +76,9 @@ class _AppSplashHandlerState extends State<_AppSplashHandler> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.network(
-                'https://associamed.org/wp-content/uploads/2024/09/Couleurs.svg',
+              Image.asset(
+                'assets/images/associamed.PNG',
                 height: 150,
-                placeholderBuilder: (BuildContext context) => const CircularProgressIndicator(),
               ),
               const SizedBox(height: 32),
               const CircularProgressIndicator(color: Color(0xFF1A237E)),

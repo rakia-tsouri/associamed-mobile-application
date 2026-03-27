@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 
@@ -55,10 +55,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 20),
-                    SvgPicture.network(
-                      'https://associamed.org/wp-content/uploads/2024/09/Couleurs.svg',
+                    Image.asset(
+                      'assets/images/associamed.PNG',
                       height: 120,
-                      placeholderBuilder: (context) => const Icon(Icons.medication, size: 80, color: Colors.indigo),
                     ),
                     const SizedBox(height: 40),
                     const Text(

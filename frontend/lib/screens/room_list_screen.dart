@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../models/room.dart';
@@ -32,11 +32,11 @@ class _RoomListScreenState extends State<RoomListScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FB),
+
       appBar: AppBar(
-        title: SvgPicture.network(
-          'https://associamed.org/wp-content/uploads/2024/09/Couleurs.svg',
+        title: Image.asset(
+          'assets/images/associamed.PNG',
           height: 40,
-          placeholderBuilder: (c) => const Text('Associa-Med'),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
