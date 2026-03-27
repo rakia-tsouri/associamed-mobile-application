@@ -1,11 +1,17 @@
 workflows:
   ios-workflow:
-    name: iOS Build
+    name: iOS Debug Build
     instance_type: mac_mini_m1
     environment:
       flutter: stable
     scripts:
-      - flutter pub get
-      - flutter build ios --debug --no-codesign
+      - name: Get packages
+        script: |
+          cd frontend
+          flutter pub get
+      - name: Build iOS
+        script: |
+          cd frontend
+          flutter build ios --debug --no-codesign
     artifacts:
-      - build/ios/iphoneos/Runner.app
+      - frontend/build/ios/iphoneos/Runner.app
