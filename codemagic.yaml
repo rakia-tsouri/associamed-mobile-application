@@ -1,17 +1,30 @@
 workflows:
   ios-workflow:
-    name: iOS Debug Build
+    name: iOS Build
     instance_type: mac_mini_m1
+    working_directory: frontend
+    
     environment:
       flutter: stable
+      
     scripts:
       - name: Get packages
+        script: flutter pub get
+        
+      - name: Build iOS (Release, no codesign)
+        script: flutter build ios --release --no-codesign
+        
+      - name: Package into IPA
         script: |
-          cd frontend
-          flutter pub get
-      - name: Build iOS
-        script: |
-          cd frontend
-          flutter build ios --debug --no-codesign
+          # 1. On crée le dossier Payload
+          mkdir -p build/ios/iphoneos/Payload
+          # 2. On y déplace l'application
+          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/
+          # 3. On rentre dans le dossier
+          cd build/ios/iphoneos
+          # 4. On compresse le tout en .ipa
+          zip -r Associamed.ipa Payload
+          
     artifacts:
-      - frontend/build/ios/iphoneos/Runner.app
+      # On demande à Codemagic de nous livrer le fichier .ipa final !
+      - build/ios/iphoneos/*.ipa
