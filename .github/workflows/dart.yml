@@ -1,0 +1,51 @@
+name: iOS IPA Build + Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Get dependencies
+        working-directory: frontend
+        run: flutter pub get
+
+      - name: Build iOS (unsigned)
+        working-directory: frontend
+        run: flutter build ios --release --no-codesign
+
+      - name: Create unsigned IPA with Payload folder
+        working-directory: frontend
+        run: |
+          IPA_OUTPUT_DIR=build/ios/ipa
+          mkdir -p $IPA_OUTPUT_DIR/Payload
+          cp -R build/ios/iphoneos/Runner.app $IPA_OUTPUT_DIR/Payload/
+          cd $IPA_OUTPUT_DIR
+          zip -qq -r -9 FlutterApp.ipa Payload
+          echo "IPA created at: $(pwd)/FlutterApp.ipa"
+          ls -lh FlutterApp.ipa
+
+      - name: Create Release and attach IPA
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ipa-build-${{ github.run_number }}
+          name: iOS IPA Build #${{ github.run_number }}
+          body: |
+            Unsigned iOS IPA
+            Built from commit: ${{ github.sha }}
+          files: frontend/build/ios/ipa/FlutterApp.ipa
+          draft: false
+          prerelease: false
