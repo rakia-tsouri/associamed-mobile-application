@@ -54,21 +54,73 @@ class _RoomListScreenState extends State<RoomListScreen> {
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Center(
-            child: Opacity(
-              opacity: 0.15,
-              child: Image.asset(
-                'assets/images/doctime_logo.jpeg',
-                fit: BoxFit.contain,
-                width: double.infinity,
-              ),
+          Expanded(
+            child: Stack(
+              children: [
+                Center(
+                  child: Opacity(
+                    opacity: 0.15,
+                    child: Image.asset(
+                      'assets/images/doctime_logo.jpeg',
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                    ),
+                  ),
+                ),
+                RefreshIndicator(
+                  onRefresh: () => provider.fetchRooms(),
+                  child: isUser1 ? _buildUser1Overview(user, allRooms) : (isUser2 ? _buildUser2View(userRooms) : _buildAdminView(allRooms, provider)),
+                ),
+              ],
             ),
           ),
-          RefreshIndicator(
-            onRefresh: () => provider.fetchRooms(),
-            child: isUser1 ? _buildUser1Overview(user, allRooms) : (isUser2 ? _buildUser2View(userRooms) : _buildAdminView(allRooms, provider)),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(color: Colors.indigo.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, -2)),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/saiph.png', 
+                          height: 45, 
+                          width: 90,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => const SizedBox.shrink()
+                        ),
+                        const SizedBox(width: 24),
+                        Container(height: 40, width: 1, color: Colors.grey[300]),
+                        const SizedBox(width: 24),
+                        Image.asset(
+                          'assets/images/jei.png', 
+                          height: 40, 
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => const SizedBox.shrink()
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'powered by Junior Entreprise Insat', 
+                      style: TextStyle(fontSize: 9, color: Colors.grey[700], fontWeight: FontWeight.bold)
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -107,7 +159,7 @@ class _RoomListScreenState extends State<RoomListScreen> {
           const SizedBox(height: 32),
           _buildStatCard('Salles Actives', rooms.length.toString(), Icons.door_front_door, Colors.indigo),
           const SizedBox(height: 16),
-          _buildStatCard('Capacité Totale', (rooms.length * 4).toString(), Icons.people, Colors.green),
+          _buildStatCard('Capacité Totale', rooms.fold<int>(0, (sum, item) => sum + item.capacity).toString(), Icons.people, Colors.green),
           const SizedBox(height: 32),
           const Text('Note: En tant que Consultant (USER_1), vous avez un accès en lecture seule aux statistiques.', 
             style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
@@ -164,7 +216,7 @@ class _RoomListScreenState extends State<RoomListScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              '${room.availableSlots} / 4',
+              '${room.availableSlots} / ${room.capacity}',
               style: TextStyle(color: statusColor, fontWeight: FontWeight.w900, fontSize: 16),
             ),
           ),
@@ -271,18 +323,30 @@ class _RoomListScreenState extends State<RoomListScreen> {
   // User Management is now handled in UserManagementScreen
 
   void _showAddRoomDialog(BuildContext context) {
-    final controller = TextEditingController();
+    final nameController = TextEditingController();
+    final capacityController = TextEditingController(text: '4');
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Nouvelle Salle'),
-        content: TextField(controller: controller, decoration: const InputDecoration(labelText: 'Nom de la salle')),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nom de la salle')),
+            TextField(
+              controller: capacityController, 
+              decoration: const InputDecoration(labelText: 'Capacité maximale'), 
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
           ElevatedButton(
             onPressed: () {
-              if (controller.text.isNotEmpty) {
-                context.read<AppProvider>().addRoom(controller.text);
+              if (nameController.text.isNotEmpty && capacityController.text.isNotEmpty) {
+                final capacity = int.tryParse(capacityController.text) ?? 4;
+                context.read<AppProvider>().addRoom(nameController.text, capacity);
                 Navigator.pop(context);
               }
             },
@@ -334,7 +398,7 @@ class _RoomCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '${room.availableSlots} / 4 places disponibles',
+                          '${room.availableSlots} / ${room.capacity} places disponibles',
                           style: TextStyle(color: Colors.grey[700]),
                         ),
                       ],

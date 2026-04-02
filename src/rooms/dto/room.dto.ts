@@ -12,6 +12,12 @@ export class CreateRoomDto {
     @Max(4)
     availableSlots: number;
 
+    @ApiProperty({ example: 4, minimum: 1, required: false })
+    @IsInt()
+    @Min(1)
+    @IsOptional()
+    capacity?: number;
+
     @ApiProperty({ example: 1, required: false })
     @IsInt()
     @IsOptional()
@@ -30,6 +36,12 @@ export class UpdateRoomDto {
     @Max(4)
     @IsOptional()
     availableSlots?: number;
+
+    @ApiProperty({ example: 4, minimum: 1, required: false })
+    @IsInt()
+    @Min(1)
+    @IsOptional()
+    capacity?: number;
 
     @ApiProperty({ example: 1, required: false })
     @IsInt()

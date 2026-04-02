@@ -9,7 +9,7 @@ export class Room {
     @Column()
     name: string;
 
-    @Column({ default: 0 })
+    @Column({ default: 4 })
     capacity: number;
 
     @Column({ default: 0 })

@@ -75,8 +75,9 @@ export class RoomsService {
 
         Object.assign(room, updateData);
 
-        if (room.availableSlots < 0 || room.availableSlots > 4) {
-            throw new BadRequestException('Available slots must be between 0 and 4');
+        const maxCapacity = room.capacity > 0 ? room.capacity : 4;
+        if (room.availableSlots < 0 || room.availableSlots > maxCapacity) {
+            throw new BadRequestException(`Available slots must be between 0 and ${maxCapacity}`);
         }
 
         const savedRoom = await this.roomsRepository.save(room) as Room;
@@ -86,7 +87,8 @@ export class RoomsService {
 
     async increment(id: number, user: User): Promise<Room> {
         const room = await this.findOne(id, user);
-        if (room.availableSlots >= 4) {
+        const maxCapacity = room.capacity > 0 ? room.capacity : 4;
+        if (room.availableSlots >= maxCapacity) {
             throw new BadRequestException('Room is already at maximum capacity');
         }
         room.availableSlots += 1;

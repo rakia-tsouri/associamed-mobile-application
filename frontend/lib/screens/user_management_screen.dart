@@ -28,57 +28,113 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FB),
       appBar: AppBar(
-        title: const Text('Gestion des Utilisateurs', style: TextStyle(color: Color(0xFF1A237E), fontWeight: FontWeight.bold)),
+        title: Image.asset(
+          'assets/images/associamed.PNG',
+          height: 40,
+        ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF1A237E)),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Center(
-            child: Opacity(
-              opacity: 0.15,
-              child: Image.asset(
-                'assets/images/doctime_logo.jpeg',
-                fit: BoxFit.contain,
-                width: double.infinity,
-              ),
+          Expanded(
+            child: Stack(
+              children: [
+                Center(
+                  child: Opacity(
+                    opacity: 0.15,
+                    child: Image.asset(
+                      'assets/images/doctime_logo.jpeg',
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                    ),
+                  ),
+                ),
+                RefreshIndicator(
+                  onRefresh: () => provider.fetchUsers(),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(24),
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      final user = users[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: _getRoleColor(user.role).withValues(alpha: 0.2),
+                            child: Icon(Icons.person, color: _getRoleColor(user.role)),
+                          ),
+                          title: Text(user.username, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(_getRoleName(user.role), style: TextStyle(color: _getRoleColor(user.role))),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () => _showEditUserDialog(context, user),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => _confirmDeleteUser(context, user),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
-          RefreshIndicator(
-            onRefresh: () => provider.fetchUsers(),
-            child: ListView.builder(
-          padding: const EdgeInsets.all(24),
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            final user = users[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: _getRoleColor(user.role).withValues(alpha: 0.2),
-                  child: Icon(Icons.person, color: _getRoleColor(user.role)),
-                ),
-                title: Text(user.username, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text(_getRoleName(user.role), style: TextStyle(color: _getRoleColor(user.role))),
-                trailing: Row(
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(color: Colors.indigo.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, -2)),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () => _showEditUserDialog(context, user),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/saiph.png', 
+                          height: 45, 
+                          width: 90,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => const SizedBox.shrink()
+                        ),
+                        const SizedBox(width: 24),
+                        Container(height: 40, width: 1, color: Colors.grey[300]),
+                        const SizedBox(width: 24),
+                        Image.asset(
+                          'assets/images/jei.png', 
+                          height: 40, 
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => const SizedBox.shrink()
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _confirmDeleteUser(context, user),
+                    const SizedBox(height: 8),
+                    Text(
+                      'powered by Junior Entreprise Insat', 
+                      style: TextStyle(fontSize: 9, color: Colors.grey[700], fontWeight: FontWeight.bold)
                     ),
                   ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
           ),
         ],
       ),

@@ -77,7 +77,7 @@ class AppProvider with ChangeNotifier {
   }
 
   Future<void> incrementSlots(Room room) async {
-    if (room.availableSlots < 4) {
+    if (room.availableSlots < room.capacity) {
       try {
         final updatedRoom = await _api.incrementSlots(room.id);
         _updateLocalRoom(updatedRoom);
@@ -98,8 +98,8 @@ class AppProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addRoom(String name) async {
-    final newRoom = await _api.addRoom(name);
+  Future<void> addRoom(String name, int capacity) async {
+    final newRoom = await _api.addRoom(name, capacity);
     _rooms.add(newRoom);
     notifyListeners();
   }

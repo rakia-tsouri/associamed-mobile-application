@@ -7,7 +7,7 @@ import '../models/room.dart';
 
 class ApiService {
   // Use localhost for Web, 10.0.2.2 for Android Emulator
- String get baseUrl => 'https://associamed-gestion-salles-production.up.railway.app';
+ String get baseUrl => 'associamed-gestion-salles-production.up.railway.app';
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -100,13 +100,14 @@ class ApiService {
     }
   }
 
-  Future<Room> addRoom(String name) async {
+  Future<Room> addRoom(String name, int capacity) async {
     final response = await http.post(
       Uri.parse('$baseUrl/rooms'),
       headers: await _getHeaders(),
       body: jsonEncode({
         'name': name,
         'availableSlots': 0, // Mandatory for CreateRoomDto
+        'capacity': capacity,
       }),
     );
 
