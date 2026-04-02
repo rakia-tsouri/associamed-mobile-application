@@ -7,7 +7,7 @@ import '../models/room.dart';
 
 class ApiService {
   // Use localhost for Web, 10.0.2.2 for Android Emulator
- String get baseUrl => 'associamed-gestion-salles-production.up.railway.app';
+ String get baseUrl => 'https://associamed-gestion-salles-production.up.railway.app';
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
