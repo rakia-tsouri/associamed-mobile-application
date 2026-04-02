@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/room.dart';
@@ -6,43 +7,59 @@ import '../services/api_service.dart';
 
 class AppProvider with ChangeNotifier {
   final ApiService _api = ApiService();
-  
+
   User? _user;
   List<Room> _rooms = [];
   List<User> _users = [];
   bool _isLoading = false;
+  late Timer _refreshTimer; // Add this
 
   User? get user => _user;
   List<Room> get rooms => _rooms;
   List<User> get users => _users;
   bool get isLoading => _isLoading;
 
+  // Start auto-refresh when user logs in
+  void _startAutoRefresh() {
+    _refreshTimer = Timer.periodic(Duration(seconds: 2), (_) {
+      fetchRooms();
+    });
+  }
+
+  // Stop auto-refresh when user logs out
+  void _stopAutoRefresh() {
+    if (_refreshTimer.isActive) {
+      _refreshTimer.cancel();
+    }
+  }
+
   Future<bool> login(String username, String password) async {
     _isLoading = true;
     notifyListeners();
-    
+
     try {
       final loginData = await _api.login(username, password);
-      // Backend returns { access_token: string, user: { id: number, ... } }
       if (loginData['user'] != null && loginData['user']['id'] != null) {
         final userId = loginData['user']['id'];
         _user = await _api.getProfile(userId);
       }
-      
+
       if (_user != null) {
         await fetchRooms();
         if (_user!.role == UserRole.admin) await fetchUsers();
+        _startAutoRefresh(); // Start polling after login
       }
     } catch (e) {
       _user = null;
     }
-    
+
     _isLoading = false;
     notifyListeners();
     return _user != null;
   }
 
   Future<void> logout() async {
+    _stopAutoRefresh(); // Stop polling before logout
     _user = null;
     _rooms = [];
     final prefs = await SharedPreferences.getInstance();
@@ -62,7 +79,7 @@ class AppProvider with ChangeNotifier {
 
   Future<void> updateUser(int id, {String? username, String? password, String? role}) async {
     await _api.updateUser(id, username: username, password: password, role: role);
-    await fetchUsers(); // Refresh the list
+    await fetchUsers();
   }
 
   Future<void> deleteUser(int id) async {
@@ -72,8 +89,12 @@ class AppProvider with ChangeNotifier {
   }
 
   Future<void> fetchRooms() async {
-    _rooms = await _api.getRooms();
-    notifyListeners();
+    try {
+      _rooms = await _api.getRooms();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Fetch rooms error: $e');
+    }
   }
 
   Future<void> incrementSlots(Room room) async {
@@ -112,7 +133,7 @@ class AppProvider with ChangeNotifier {
 
   Future<void> assignRoom(int roomId, int? userId) async {
     await _api.assignRoom(roomId, userId);
-    await fetchRooms(); // Refresh to see assignment logic if needed
+    await fetchRooms();
   }
 
   void _updateLocalRoom(Room room) {
@@ -121,5 +142,11 @@ class AppProvider with ChangeNotifier {
       _rooms[index] = room;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _stopAutoRefresh(); // Clean up timer
+    super.dispose();
   }
 }
